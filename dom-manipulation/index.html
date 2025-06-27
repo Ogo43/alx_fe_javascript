@@ -17,9 +17,16 @@
     <button onclick="addQuote()">Add Quote</button>
   </div> -->
 
+   <!-- Export/Import -->
   <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
   <button id="exportBtn">Export Quotes</button>
-     
+   
+  <!-- Category Filter Dropdown -->
+    <select id="categoryFilter" onchange="filterQuotes()">
+    <option value="all">All Categories</option>
+    <!-- Dynamically populated categories -->
+  </select>
+  
     <script src="script.js"></script>
   </body>
 </html>
