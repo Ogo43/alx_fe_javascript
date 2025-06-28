@@ -101,6 +101,9 @@ function addQuote() {
 
   populateCategories(); // Refresh dropdown with any new categories
 
+  
+fetchQuotesFromServer(quotes); // Send to server
+
   alert("New quote added!");
 
   // Clear input fields after quotes and category have been added
@@ -192,32 +195,21 @@ function loadLastViewedQuote() {
   }
 }
 
-async function fetchQuotesFromServer() {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts"); // Replace with actual quote API if needed
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Example conversion of data into quotes array format (adjust based on actual API structure)
-    const serverQuotes = data.slice(0, 5).map((item) => ({
-      text: item.title,
-      category: "Imported",
-    }));
-
-    // Merge with existing quotes
-    quotes.push(...serverQuotes);
-    saveQuotes(); // Save to localStorage if you're using it
-    populateCategories(); // Update category dropdown if needed
-    showRandomQuote(); // Optionally show a new quote
-
-    alert("Quotes fetched from server successfully!");
-  } catch (error) {
-    console.error("Error fetching quotes from server:", error);
-    alert("Failed to fetch quotes from server.");
-  }
+function fetchQuotesFromServer() {
+  fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(quote)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Quote posted:', data);
+  })
+  .catch(error => {
+    console.error('Error posting quote:', error);
+  });
 }
 
 function resolveConflicts(serverQuotes) {
@@ -250,8 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
   populateCategories();
   filterQuotes();
   loadLastViewedQuote();
-  fetchServerQuotes(); // Initial fetch
-  setInterval(fetchServerQuotes, 30000); // Repeat every 30 seconds
 
   document.getElementById("quoteDisplay").innerHTML = "";
   document
