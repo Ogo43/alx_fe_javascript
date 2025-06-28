@@ -195,21 +195,36 @@ function loadLastViewedQuote() {
   }
 }
 
-function fetchQuotesFromServer() {
-  fetch('https://jsonplaceholder.typicode.com/posts', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(quote)
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Quote posted:', data);
-  })
-  .catch(error => {
-    console.error('Error posting quote:', error);
-  });
+// Async function to fetch and sync quotes
+async function fetchQuotesFromServer() {
+  try {
+    // 1. GET quotes from a fake API
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const data = await response.json();
+
+    // 2. Use the first 5 quotes only for simplicity
+    const fetchedQuotes = data.slice(0, 5).map(item => ({
+      text: item.title,
+      category: 'Imported'
+    }));
+
+    // 3. Merge into local quotes and save
+    quotes.push(...fetchedQuotes);
+    saveQuotes();
+
+    // 4. POST one quote to simulate sending to server
+    await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(fetchedQuotes[0]) // send just one
+    });
+
+    console.log('Quotes fetched and posted successfully.');
+  } catch (error) {
+    console.error('Error syncing with server:', error);
+  }
 }
 
 function resolveConflicts(serverQuotes) {
