@@ -227,6 +227,10 @@ async function fetchQuotesFromServer() {
   }
 }
 
+function syncQuotes() {
+  fetchQuotesFromServer();
+}
+
 function resolveConflicts(serverQuotes) {
   const localQuotes = JSON.parse(localStorage.getItem("quotes") || "[]");
 
