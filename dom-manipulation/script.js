@@ -265,6 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
   populateCategories();
   filterQuotes();
   loadLastViewedQuote();
+  syncQuotes(); // start syncing
 
   document.getElementById("quoteDisplay").innerHTML = "";
   document
