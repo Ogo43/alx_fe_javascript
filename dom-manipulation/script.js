@@ -227,9 +227,13 @@ async function fetchQuotesFromServer() {
   }
 }
 
+// Sync function to be called periodically
 function syncQuotes() {
   fetchQuotesFromServer();
 }
+
+// Call syncQuotes every 30 seconds
+setInterval(syncQuotes, 30000);
 
 function resolveConflicts(serverQuotes) {
   const localQuotes = JSON.parse(localStorage.getItem("quotes") || "[]");
