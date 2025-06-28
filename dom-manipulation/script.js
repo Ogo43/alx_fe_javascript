@@ -220,7 +220,12 @@ async function fetchQuotesFromServer() {
       },
       body: JSON.stringify(fetchedQuotes[0]) // send just one
     });
-
+     // UI Notification
+    const notice = document.createElement("div");
+    notice.textContent = "Quotes synced with server!";
+    notice.style.color = "green";
+    document.body.appendChild(notice);
+    
     console.log('Quotes fetched and posted successfully.');
   } catch (error) {
     console.error('Error syncing with server:', error);
