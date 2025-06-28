@@ -189,6 +189,50 @@ function loadLastViewedQuote() {
     document.getElementById("quoteDisplay").innerHTML = `
       <strong>"${quote.text}"</strong><br><em>(${quote.category})</em>
     `;
+  };
+}
+
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Simulated server
+
+async function fetchServerQuotes() {
+  try {
+    const response = await fetch(SERVER_URL);
+    const serverData = await response.json();
+
+    // Simulate quotes from server: using first 10 posts
+    const serverQuotes = serverData.slice(0, 10).map(post => ({
+      text: post.title,
+      category: "server"
+    }));
+
+    resolveConflicts(serverQuotes);
+  } catch (error) {
+    console.error("Error fetching server data:", error);
+  }
+}
+
+function resolveConflicts(serverQuotes) {
+  const localQuotes = JSON.parse(localStorage.getItem("quotes") || "[]");
+
+  // If server quote text doesn’t exist in local, add it
+  const updatedQuotes = [...localQuotes];
+
+  let newQuotesAdded = false;
+
+  serverQuotes.forEach(serverQuote => {
+    const exists = localQuotes.some(local => local.text === serverQuote.text);
+    if (!exists) {
+      updatedQuotes.push(serverQuote);
+      newQuotesAdded = true;
+    }
+  });
+
+  // Save back to local storage
+  localStorage.setItem("quotes", JSON.stringify(updatedQuotes));
+
+  if (newQuotesAdded) {
+    alert("Quotes synced from server. New quotes were added.");
+    populateCategories();  // Re-populate dropdown
   }
 }
 
@@ -197,6 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
   populateCategories();
   filterQuotes();
   loadLastViewedQuote();
+  fetchServerQuotes(); // Initial fetch
+  setInterval(fetchServerQuotes, 30000); // Repeat every 30 seconds
 
   document.getElementById("quoteDisplay").innerHTML = "";
   document.getElementById("newQuote").addEventListener("click", showRandomQuote);
